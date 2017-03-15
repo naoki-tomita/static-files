@@ -6,14 +6,15 @@ router = {
     this.resources = resources;
   },
   route: function( request, response ) {
+    var that = this;
     this.resource( request ).then( function( result ) {
       response.statusCode = result.status;
-      response = this.setHeaders( response, result.headers );
-      response.end( result.body );
+      response = that.setHeaders( response, result.headers );
+      response.end( JSON.stringify( result.body ) );
     } )
     .catch( function( e ) {
       response.statusCode = 500;
-      response.end( "" );
+      response.end( e );
     } );
   },
   resource: function( request ) {
@@ -28,3 +29,5 @@ router = {
     return response;
   }
 };
+
+module.exports = router;

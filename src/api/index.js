@@ -1,12 +1,14 @@
-var Tenants = require( "./routes/tenants.js" ).Tenants;
+var http = require( "http" ),
+    router = require( "./routes/router.js" ),
+    Files = require( "./routes/files.js" );
 
-var tenant = new Tenants();
-tenant.route( "/hoge/fuga", { method: "get" } );
+var files = new Files( "./apps" );
+router.init( {
+  files: files
+} );
 
-// server = new http.Server();
-// server.listen( 80, "0.0.0.0" );
-// server.on( "request", function( request ) {
-//   console.log( request.url );
-//   console.log( request.method );
-//   console.log( request.headers );
-// } );
+server = new http.Server();
+server.listen( 80, "0.0.0.0" );
+server.on( "request", function( request, response ) {
+  router.route( request, response );
+} );

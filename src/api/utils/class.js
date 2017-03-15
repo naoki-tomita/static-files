@@ -29,4 +29,4 @@ var Class = {
   }
 };
 
-module.exports.Class = Class;
+module.exports = Class;

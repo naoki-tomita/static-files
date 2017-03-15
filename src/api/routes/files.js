@@ -5,20 +5,16 @@ var utils = require( "../utils/utils.js" ),
 
 Files = Route.extends( {
   init: function( path ) {
-    this.path = path;
+    this.path = utils.trim( path, "/" );
   },
   get: function( resource, request ) {
-    var that = this;
-    if ( that.resource( resource, 1 ) ) {
-      dir = new Directory( that.path + "/" + that.resource( request, 1 ) );
+    if ( this.resource( resource, 1 ) ) {
+      dir = new Directory( this.path + "/" + this.resource( resource, 1 ) );
     } else {
-      dir = new Directory( that.path );
+      dir = new Directory( this.path );
     }
 
-    return dir.get( that.nextResource( request ), request );
-  },
-  post: function( resource, request ) {
-
+    return dir.get( this.nextResource( resource ), request );
   }
 } );
 
@@ -26,21 +22,30 @@ Directory = Route.extends( {
   init: function( path ) {
     this.path = path;
   },
-  get: function( request ) {
-
+  get: function( resource, request ) {
+    if ( this.resource( resource, 1 ) ) {
+      return this._readdir();
+    } else {
+      return this._readdir();
+    }
   },
   _getFile: function( request ) {
 
   },
   _readdir: function() {
     return fs.readdir( this.path )
-    .then( function() {
-      return new Promise( function( resolve ) {} );
+    .then( function( dir ) {
+      return new Promise( function( resolve ) {
+        resolve( {
+          status: 200,
+          body: dir
+        } );
+      } );
     } );
   }
 } );
 
-Files = Route.extends( {
+File = Route.extends( {
   init: function( path ) {
     this.path = path;
   },
@@ -48,3 +53,5 @@ Files = Route.extends( {
 
   }
 } );
+
+module.exports = Files;
