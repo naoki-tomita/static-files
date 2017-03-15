@@ -10,11 +10,11 @@ router = {
     this.resource( request ).then( function( result ) {
       response.statusCode = result.status;
       response = that.setHeaders( response, result.headers );
-      response.end( JSON.stringify( result.body ) );
+      response.end( result.body );
     } )
     .catch( function( e ) {
       response.statusCode = 500;
-      response.end( e );
+      response.end( JSON.stringify( e ) );
     } );
   },
   resource: function( request ) {

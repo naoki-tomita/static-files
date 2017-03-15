@@ -1,0 +1,15 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
+<script src="http://localhost/files/file/file.js"></script>
+<h1>Files</h1>
+<ul>
+  <li data-bind="click: koUp">..</li>
+  <!-- ko foreach: koFiles -->
+    <li data-bind="text: $data, click: $parent.koDig"></li>
+  <!-- /ko -->
+</ul>
+<script>
+  ( function( root ) {
+    root.app.init();
+  } )( window )
+</script>

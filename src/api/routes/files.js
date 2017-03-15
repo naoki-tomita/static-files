@@ -1,19 +1,14 @@
 var utils = require( "../utils/utils.js" ),
     Route = require( "./route.js" ),
     fs = require( "mz/fs" ),
-    Files, Directory, File;
+    Files, Directory
 
 Files = Route.extends( {
   init: function( path ) {
     this.path = utils.trim( path, "/" );
   },
   get: function( resource, request ) {
-    if ( this.resource( resource, 1 ) ) {
-      dir = new Directory( this.path + "/" + this.resource( resource, 1 ) );
-    } else {
-      dir = new Directory( this.path );
-    }
-
+    dir = new Directory( this.path );
     return dir.get( this.nextResource( resource ), request );
   }
 } );
@@ -23,34 +18,47 @@ Directory = Route.extends( {
     this.path = path;
   },
   get: function( resource, request ) {
-    if ( this.resource( resource, 1 ) ) {
-      return this._readdir();
-    } else {
-      return this._readdir();
-    }
+    var that = this;
+    return this._getPathInfo( resource )
+    .then( function( stat ) {
+      if ( stat.isFile() ) {
+        return that._getFile( resource );
+      } else if ( stat.isDirectory() ) {
+        return that._readdir( resource );
+      }
+      return that._404();
+    } )
+    .catch( function ( err ) {
+      return that._404( err );
+    } );
   },
-  _getFile: function( request ) {
-
+  _getPathInfo: function( path ) {
+    return fs.stat( this.path + "/" + path );
   },
-  _readdir: function() {
-    return fs.readdir( this.path )
-    .then( function( dir ) {
-      return new Promise( function( resolve ) {
-        resolve( {
-          status: 200,
-          body: dir
-        } );
+  _getFile: function( path ) {
+    return fs.readFile( this.path + "/" + path )
+    .then( function( file ) {
+      return Promise.resolve( {
+        status: 200,
+        headers: {
+          "content-type": "text/html; charset=UTF-8"
+        },
+        body: file.toString()
       } );
     } );
-  }
-} );
-
-File = Route.extends( {
-  init: function( path ) {
-    this.path = path;
   },
-  get: function( request ) {
-
+  _readdir: function( dir ) {
+    return fs.readdir( this.path + "/" + dir )
+    .then( function( dirInfo ) {
+      console.log( dirInfo )
+      return Promise.resolve( {
+        status: 200,
+        headers: {
+          "content-type": "application/json; charset=UTF-8"
+        },
+        body: JSON.stringify( dirInfo )
+      } );
+    } );
   }
 } );
 
