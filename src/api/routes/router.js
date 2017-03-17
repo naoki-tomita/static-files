@@ -18,7 +18,14 @@ router = {
     } );
   },
   resource: function( request ) {
-    var resource = utils.trim( request.url, "/" );
+    var resource = utils.trim( request.url, "/" ), path;
+    path = this.resources[ resource.split( "/" )[ 0 ] ];
+    if ( !path ) {
+      console.log( request.url );
+      return Promise.resolve( {
+        status: 404
+      } );
+    }
     return this.resources[ resource.split( "/" )[ 0 ] ].route( request );
   },
   setHeaders: function( response, headers ) {
