@@ -1,10 +1,11 @@
 var Class = {
   extends: function( obj ) {
     var parent = this, klass, key, superMethods = {};
-
     klass = function() {
       this.init.apply( this, arguments );
     };
+
+    klass.prototype.init = function() {};
 
     for ( key in parent.prototype ) {
       klass.prototype[ key ] = parent.prototype[ key ];
@@ -21,7 +22,8 @@ var Class = {
     }
 
     klass.extends = this.extends;
-    klass._super = function() {
+    klass.prototype._super = function() {
+      console.trace();
       var name = this._super.caller.name;
       superMethods[ name ].apply( this, arguments );
     };

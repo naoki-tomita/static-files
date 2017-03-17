@@ -5,6 +5,7 @@ var utils = require( "../utils/utils.js" ),
 
 Files = Route.extends( {
   init: function( path ) {
+    this._super();
     this.path = utils.trim( path, "/" );
   },
   get: function( resource, request ) {
@@ -15,6 +16,7 @@ Files = Route.extends( {
 
 Directory = Route.extends( {
   init: function( path ) {
+    this._super();
     this.path = path;
   },
   get: function( resource, request ) {
