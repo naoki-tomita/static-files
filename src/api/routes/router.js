@@ -21,7 +21,6 @@ router = {
     var resource = utils.trim( request.url, "/" ), path;
     path = this.resources[ resource.split( "/" )[ 0 ] ];
     if ( !path ) {
-      console.log( request.url );
       return Promise.resolve( {
         status: 404
       } );

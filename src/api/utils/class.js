@@ -5,15 +5,20 @@ var Class = {
       this.init.apply( this, arguments );
     };
 
-    klass.prototype.init = function() {};
+    if ( !obj.init ) {
+      klass.prototype.init = function() {};
+    }
+
+    parent.prototype = parent.prototype || {};
 
     for ( key in parent.prototype ) {
       klass.prototype[ key ] = parent.prototype[ key ];
     }
+
     for ( key in obj ) {
       if ( obj.hasOwnProperty( key ) ) {
         if ( typeof obj[ key ] === "function" ) {
-          superMethods[ key ] = !parent[ key ] ? function() {} : typeof parent[ key ] !== "function" ? function() {} : parent[ key ];
+          superMethods[ key ] = !parent.prototype[ key ] ? function() {} : typeof parent.prototype[ key ] !== "function" ? function() {} : parent.prototype[ key ];
           klass.prototype[ key ] = obj[ key ];
         } else {
           klass[ key ] = obj[ key ];
@@ -23,7 +28,6 @@ var Class = {
 
     klass.extends = this.extends;
     klass.prototype._super = function() {
-      console.trace();
       var name = this._super.caller.name;
       superMethods[ name ].apply( this, arguments );
     };

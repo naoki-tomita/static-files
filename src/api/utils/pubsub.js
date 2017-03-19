@@ -3,12 +3,12 @@ var Class = require( "./class.js" ),
 
 PubSub = Class.extends( {
   init: function() {
-    console.trace();
     this.events = {};
   },
   on: function( type, func ) {
     this.events[ type ] = this.events[ type ] || [];
-    this.events[ type ] = func;
+    this.events[ type ].push( func );
+    return this;
   },
   trigger: function( type, args ) {
     var i;

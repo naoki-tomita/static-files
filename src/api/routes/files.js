@@ -7,10 +7,13 @@ Files = Route.extends( {
   init: function( path ) {
     this._super();
     this.path = utils.trim( path, "/" );
+    this.dir = new Directory( this.path );
   },
   get: function( resource, request ) {
-    dir = new Directory( this.path );
-    return dir.get( this.nextResource( resource ), request );
+    return this.dir.get( this.nextResource( resource ), request );
+  },
+  post: function( resource, request ) {
+    return this.dir.post( this.nextResource( resource ), request );
   }
 } );
 
@@ -19,10 +22,23 @@ Directory = Route.extends( {
     this._super();
     this.path = path;
   },
+  post: function( resource, request ) {
+    // ファイルアップロードの仕様 http://www.javadrive.jp/servlet/fileupload_tutorial/index2.html
+    var that = this;
+    return new Promise( function( resolve ) {
+      request.on( "data", function( data ) {
+        fs.writeFile( that.nextResource( resource ), data );
+      } );
+      request.on( "end", function() {
+        resolve( { status: 200 } );
+      } );
+    } );
+  },
   get: function( resource, request ) {
     var that = this;
     return this._getPathInfo( resource )
     .then( function( stat ) {
+
       if ( stat.isFile() ) {
         return that._getFile( resource );
       } else if ( stat.isDirectory() ) {
@@ -52,7 +68,6 @@ Directory = Route.extends( {
   _readdir: function( dir ) {
     return fs.readdir( this.path + "/" + dir )
     .then( function( dirInfo ) {
-      console.log( dirInfo )
       return Promise.resolve( {
         status: 200,
         headers: {

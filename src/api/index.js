@@ -1,11 +1,13 @@
 var Server = require( "./server.js" ),
     router = require( "./routes/router.js" ),
     Files = require( "./routes/files.js" ),
-    server;
+    server, files, app;
 
-var files = new Files( "./apps" );
+files = new Files( "./apps" );
+app = new Files( "./src/app" );
 router.init( {
-  files: files
+  files: files,
+  app: app
 } );
 
 server = new Server( 80 );
