@@ -25,12 +25,26 @@ Directory = Route.extends( {
   post: function( resource, request ) {
     // ファイルアップロードの仕様 http://www.javadrive.jp/servlet/fileupload_tutorial/index2.html
     var that = this;
+    this._fetchFile( request )
+    .then( function( data ) {
+      return that._createFile( that.nextResource( resource ), data );
+    } )
+    .then( function() {
+      return Promise.resolve( { status: 200 } );
+    } )
+    .catch( function( e ) {
+      return Promise.reject( e );
+    } );
+
+  },
+  _fetchFile: function( request ) {
     return new Promise( function( resolve ) {
-      request.on( "data", function( data ) {
-        fs.writeFile( that.nextResource( resource ), data );
+      var data = "";
+      request.on( "data", function( chunk ) {
+        data += chunk;
       } );
       request.on( "end", function() {
-        resolve( { status: 200 } );
+        resolve( data );
       } );
     } );
   },

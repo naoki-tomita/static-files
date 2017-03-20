@@ -11,6 +11,7 @@ router.init( {
 } );
 
 server = new Server( 80 );
+debugger;
 server.open()
 .on( "request", function( request, response ) {
   router.route( request, response );
