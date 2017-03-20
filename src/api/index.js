@@ -1,18 +1,18 @@
-var Server = require( "./server.js" ),
-    router = require( "./routes/router.js" ),
-    Files = require( "./routes/files.js" ),
-    server, files, app;
+var express = require( "express" ),
+    fs = require( "mz/fs" ),
+    app, server;
 
-files = new Files( "./apps" );
-app = new Files( "./src/app" );
-router.init( {
-  files: files,
-  app: app
+app = express();
+
+server = app.listen( 3000, function() {
+  console.log( "server started. with port:" + server.address().port );
 } );
 
-server = new Server( 80 );
-debugger;
-server.open()
-.on( "request", function( request, response ) {
-  router.route( request, response );
+app.get( "/files/:filePath", function( req, res, next ) {
+  console.log( req.params.filePath );
+  fs.readFile( req.params.filePath )
+  .then( function( data ) {
+    res.statusCode = 200;
+    res.end( data );
+  } );
 } );
